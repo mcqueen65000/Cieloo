@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cielooooo</title>
+    <link rel="icon" type="image/png" href="./FOTOS/img07.png">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffe4e1;
+            font-family: 'Arial', sans-serif;
+            position: relative;
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            clip-path: circle(75%);
+        }
+        .popup, .questionPopup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            text-align: center;
+        }
+        .popup.active, .questionPopup.active {
+            display: block;
+        }
+        .popup button, .questionPopup button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff6699;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease, z-index 0.3s ease;
+        }
+        .popup button:hover, .questionPopup button:hover {
+            background-color: #ff3366;
+            transform: scale(1.1);
+        }
+        #handButton {
+            width: 100px;
+            height: 100px;
+            background-color: transparent;
+            border: 2px solid black;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        #handButton::before {
+            content: "🖐️";
+            font-size: 50px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #handButton .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: #f76c6c;
+            border-radius: 50%;
+            transition: width 5s linear;
+        }
+        .questionPopup #yesButton {
+            background-color: #66cc66;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            transition: transform 0.3s ease, z-index 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .questionPopup #noButton {
+            background-color: #d1d1d1;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+
+    <div class="popup active" id="initialPopup">
+        <img src="./FOTOS/Img01.png" alt="." class="image">
+        <p>¡Que ondaaa guapa! ¿Cómo estás?</p>
+        <button id="responseButton">Todo bien Guapoo</button>
+    </div>
+
+    <div class="popup" id="questionPopup">
+        <img src="./FOTOS/img02.png" alt="Pregunta" class="image">
+        <p>Te cuento que yo más o menos porque tengo una pregunta en el bolsillo. ¿Me ayudas?</p>
+        <button id="assistButton">Sí mi amorcito</button>
+    </div>
+
+    <div class="popup" id="helpPopup">
+        <img src="./FOTOS/img03.png" alt="Ayuda" class="image">
+        <p>Para ayudarme presiona aquí abajo en mi mano por 5 segundos.</p>
+        <button id="handButton"><div class="progress" id="progress"></div></button>
+    </div>
+
+    <div class="popup" id="revealPopup">
+        <img src="./FOTOS/img04.png" alt="Revelación" class="image">
+        <p>Ey guapa, ¡mira por fin salió! ¿Quieres saber cuál es la pregunta?</p>
+        <button id="knowButton">Sí, no puedo esperar más</button>
+    </div>
+
+    <div class="questionPopup" id="valentinePopup">
+        <img src="./FOTOS/img05.png" alt="San Valentín" class="image">
+        <p>¿Quieres ser mi San Valentín?</p>
+        <button id="yesButton">Sí</button>
+        <button id="noButton">No</button>
+    </div>
+
+    <div class="popup" id="finalPopup">
+        <img src="./FOTOS/img06.png" alt="Respuesta final" class="image">
+        <p>Sabía que dirías que sí, mi vida. ¡Te amooo!</p>
+    </div>
+
+    <script>
+        const responseButton = document.getElementById('responseButton');
+        const assistButton = document.getElementById('assistButton');
+        const handButton = document.getElementById('handButton');
+        const progress = document.getElementById('progress');
+        const knowButton = document.getElementById('knowButton');
+        const initialPopup = document.getElementById('initialPopup');
+        const questionPopup = document.getElementById('questionPopup');
+        const helpPopup = document.getElementById('helpPopup');
+        const revealPopup = document.getElementById('revealPopup');
+        const valentinePopup = document.getElementById('valentinePopup');
+        const finalPopup = document.getElementById('finalPopup');
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        let noCounter = 0;
+        let timer;
+
+        responseButton.addEventListener('click', () => {
+            initialPopup.classList.remove('active');
+            questionPopup.classList.add('active');
+        });
+
+        assistButton.addEventListener('click', () => {
+            questionPopup.classList.remove('active');
+            helpPopup.classList.add('active');
+        });
+
+        handButton.addEventListener('mousedown', () => {
+            progress.style.width = '100%';
+            timer = setTimeout(() => {
+                helpPopup.classList.remove('active');
+                revealPopup.classList.add('active');
+            }, 5000);
+        });
+
+        handButton.addEventListener('mouseup', () => {
+            clearTimeout(timer);
+            progress.style.width = '0';
+        });
+
+        knowButton.addEventListener('click', () => {
+            revealPopup.classList.remove('active');
+            valentinePopup.classList.add('active');
+        });
+
+        noButton.addEventListener('click', () => {
+            noCounter++;
+            switch (noCounter) {
+                case 1:
+                    noButton.innerText = '¿Segura?';
+                    break;
+                case 2:
+                    noButton.innerText = '¿Estás segurísima segurísima?';
+                    break;
+                case 3:
+                    noButton.innerText = '¿Segurisisima?';
+                    break;
+                case 4:
+                    noButton.innerText = '¿Segurisisisisima?';
+                    break;
+                case 5:
+                    noButton.innerText = '¿Enserio estás segura?';
+                    break;
+                case 6:
+                    noButton.innerText = '¿Estás segura segura?';
+                    break;
+                default:
+                    noButton.innerText = '¿No lo quieres pensar?';
+            }
+            yesButton.style.transform = `scale(${1 + noCounter * 0.1})`;
+            yesButton.style.zIndex = 1;
+        });
+
+        yesButton.addEventListener('click', () => {
+            valentinePopup.classList.remove('active');
+            finalPopup.classList.add('active');
+        });
+    </script>
+</body>
+</html>
